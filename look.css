@@ -1,0 +1,128 @@
+/* http://localhost:9080/2425B-ASS3/index.php */
+
+header {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 80px;
+    margin-left: 40px;
+    margin-right: 40px;
+    background-color: #fccdfcf0;
+    border-radius: 40px; 
+    padding: 20px; 
+}
+
+.login-form {
+    max-width: 300px;
+    margin: 0 auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    border: solid rgb(126, 125, 125);
+}
+
+fieldset {
+    border-radius: 10px; /* Adjust the value for roundness */
+    border: 2px solid #ccc; /* Change border color and width */
+    padding: 20px; /* Add some padding */
+    background-color: #f9f9f9; /* Optional: background color */
+}
+
+.login-form div {
+    margin-bottom: 15px;
+}
+
+.login-form label {
+    margin-bottom: 5px;
+    margin-right: 10px;
+}
+
+.login-form input {
+    padding: 5px;
+    border: 2px solid #cccccc94;
+    border-radius: 4px;
+}
+
+.login-formr button {
+    background-color: rgba(212, 212, 212, 0.801);
+    color: black;
+    padding: 10px 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 20%;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;    /* Centers vertically */
+}
+
+.error {
+    color: red;
+    background-color: yellow;
+    text-align: center;
+    margin-top: 10px;
+}
+
+
+.music-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.search-bar {
+    margin-bottom: 20px;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1em;
+}
+
+.genre-buttons {
+    margin-bottom: 20px;
+}
+
+.genre-buttons button {
+    width: auto;
+    padding: 8px 15px;
+    margin-right: 10px;
+}
+
+.music-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.music-item {
+    background: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    width: calc(50% - 10px);
+    display: flex;
+    align-items: center;
+}
+
+.music-controls {
+    margin-right: 15px;
+}
+
+.play-btn img, .pause-btn img {
+    width: 30px;
+    height: 30px;
+}
+
+.icon {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+
+@media (max-width: 1000px) {
+    .music-item {
+        width: 100%;
+    }
+}
