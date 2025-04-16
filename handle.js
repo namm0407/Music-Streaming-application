@@ -1,120 +1,58 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Form validation
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        loginForm.addEvdocument.addEventListener('DOMContentLoaded', () => {
-            // Form validation
-            const loginForm = document.getElementById('login-form');
-            if (loginForm) {
-                loginForm.addEventListener('submit', (e) => {
-                    const username = document.getElementById('username').value.trim();
-                    const password = document.getElementById('password').value.trim();
-                    if (!username) {
-                        e.preventDefault();
-                        alert('Please enter a username');
-                        return;
-                    }
-                    if (!password) {
-                        e.preventDefault();
-                        alert('Please enter a password');
-                        return;
-                    }
-                });
-            }
-        
-            // Session timeout redirect
-            if (document.querySelector('.music-container')) {
-                setTimeout(() => {
-                    window.location.href = 'index.php';
-                }, 300000); // 300 seconds = 300,000 milliseconds
-            }
-        
-            // Search functionality
-            const searchInput = document.getElementById('search-input');
-            if (searchInput) {
-                searchInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        const genre = searchInput.value.trim();
-                        if (genre) {
-                            searchGenre(genre);
-                            searchInput.value = '';
-                        }
-                    }
-                });
-            }
-        
-            // Music playback
-            const playButtons = document.querySelectorAll('.play-btn');
-            const audioElements = document.querySelectorAll('.audio-player');
-            let currentAudio = null;
-        
-            playButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const musid = button.dataset.musid;
-                    const audio = document.querySelector(`audio[data-musid="${musid}"]`);
-                    const isPaused = audio.paused && audio.currentTime > 0 && !audio.ended;
-        
-                    if (currentAudio && currentAudio !== audio) {
-                        currentAudio.pause();
-                        const prevButton = document.querySelector(`button[data-musid="${currentAudio.dataset.musid}"]`);
-                        prevButton.innerHTML = '<img src="resource_ASS3/play.png" alt="Play">';
-                    }
-        
-                    if (isPaused || audio.ended || !audio.src) {
-                        if (!audio.src) {
-                            audio.src = `file.php?musid=${musid}`;
-                            audio.load();
-                        }
-                        audio.play().catch(error => {
-                            if (error.message.includes('401')) {
-                                alert('Session expired!!');
-                                window.location.href = 'index.php';
-                            }
-                        });
-                        button.innerHTML = '<img src="resource_ASS3/pause.png" alt="Pause">';
-                        currentAudio = audio;
-                        alert('Playing music');
-                    } else if (!audio.paused) {
-                        audio.pause();
-                        button.innerHTML = '<img src="resource_ASS3/play.png" alt="Play">';
-                        alert('Music paused');
-                    } else {
-                        audio.play();
-                        button.innerHTML = '<img src="resource_ASS3/pause.png" alt="Pause">';
-                        alert('Resuming music');
-                    }
-                });
-            });
-        
-            audioElements.forEach(audio => {
-                audio.addEventListener('ended', () => {
-                    const button = document.querySelector(`button[data-musid="${audio.dataset.musid}"]`);
-                    button.innerHTML = '<img src="resource_ASS3/play.png" alt="Play">';
-                    audio.src = '';
-                    currentAudio = null;
-                });
-            });
+    // Handle genre button clicks
+    const genreButtons = document.querySelectorAll('.genre-buttons button');
+    const searchInput = document.getElementById('searchInput');
+    const searchForm = document.querySelector('.search-bar form');
+
+    genreButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const genre = this.getAttribute('data-genre');
+            // Set the search input value to the selected genre
+            searchInput.value = genre;
+            // Submit the form
+            searchForm.submit();
         });
-        
-        function searchGenre(genre) {
-            window.location.href = genre ? `index.php?search=${encodeURIComponent(genre)}` : 'index.php';
-        }entListener('submit', function(e) {
-            const username = document.getElementById('username');
-            const password = document.getElementById('password');
+    });
+
+    // Handle audio player functionality
+    const audioPlayers = document.querySelectorAll('.audio-player');
+    const playButtons = document.querySelectorAll('.music-item img[alt="Play"]');
+
+    playButtons.forEach((button, index) => {
+        button.addEventListener('click', function() {
+            const audioPlayer = audioPlayers[index];
+            const musicId = audioPlayer.getAttribute('data-musid');
             
-            if (!username.value.trim()) {
-                e.preventDefault();
-                alert('Missing username!');
-                username.focus();
-                return;
-            }
-            
-            if (!password.value.trim()) {
-                e.preventDefault();
-                alert('Missing password!');
-                password.focus();
-                return;
+            if (audioPlayer.paused) {
+                // Pause all other audio players
+                audioPlayers.forEach(player => {
+                    if (player !== audioPlayer) {
+                        player.pause();
+                        player.currentTime = 0;
+                        // Reset the play button icon
+                        const correspondingButton = player.closest('.music-item').querySelector('img[alt="Play"]');
+                        correspondingButton.src = 'resource_ASS3/play.png';
+                    }
+                });
+                
+                // Play the selected audio
+                audioPlayer.src = `getmusic.php?id=${musicId}`;
+                audioPlayer.play();
+                button.src = 'resource_ASS3/pause.png';
+            } else {
+                // Pause the audio
+                audioPlayer.pause();
+                audioPlayer.currentTime = 0;
+                button.src = 'resource_ASS3/play.png';
             }
         });
-    }
+    });
+
+    // Update play button icons when audio ends
+    audioPlayers.forEach(audio => {
+        audio.addEventListener('ended', function() {
+            const button = this.closest('.music-item').querySelector('img[alt="Play"]');
+            button.src = 'resource_ASS3/play.png';
+        });
+    });
 });
