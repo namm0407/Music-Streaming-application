@@ -99,6 +99,7 @@ fieldset {
     gap: 20px;
 }
 
+
 .music-item {
     padding: 5px 30px;
     border-radius: 5px;
@@ -113,7 +114,24 @@ fieldset {
 
 .music-info {
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap
+}
+
+.one {
+    display: flex;
+    flex: 40%;
+}
+
+.two {
+    flex: 10%;
+}
+
+.three {
+    flex: 20%;
+}
+
+.four {
+    flex: 30%;
 }
 
 .play-btn img, .pause-btn img {
@@ -121,9 +139,6 @@ fieldset {
     height: 30px;
 }
 
-.play-item {
-    display: flex;
-}
 
 .icon {
     width: 20px;
@@ -136,3 +151,9 @@ fieldset {
         width: 100%;
     }
 }
+
+@media (max-width: 350px) {
+    .music-info {
+      flex-direction: row;
+    }
+  }
