@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 $dt = new mysqli("mydb", "dummy", "c3322b", "db3322");
@@ -12,7 +13,7 @@ $session_expired = false;
 $auth_failed = false;
 $notification = "";
 if (isset($_SESSION['username']) && isset($_SESSION['login_time'])) {
-    if (time() - $_SESSION['login_time'] > 5) {
+    if (time() - $_SESSION['login_time'] > 15) {
         session_destroy();
         session_start();
         $session_expired = true;
@@ -96,6 +97,7 @@ $dt->close();
     <title>2024-25 3322B Assignment Three</title>
     <link rel="stylesheet" type="text/css" href="look.css"/>
     <script src="handle.js" defer></script>
+
 </head>
 <body>
     <header>
@@ -135,11 +137,11 @@ $dt->close();
                 </form>
             </div>
             <div class="genre-buttons">
-                <button onclick="searchGenre('Cinematic')">Cinematic</button>
-                <button onclick="searchGenre('Games')">Games</button>
-                <button onclick="searchGenre('Romantic')">Romantic</button>
-                <button onclick="searchGenre('Study')">Study</button>
-                <button onclick="searchGenre('Popular')">Popular</button>
+                <button data-genre="Cinematic">Cinematic</button>
+                <button data-genre="Games">Games</button>
+                <button data-genre="Romantic">Romantic</button>
+                <button data-genre="Study">Study</button>
+                <button data-genre="Popular">Popular</button>
             </div>
             <h2><?php echo htmlspecialchars($list_title); ?></h2>
             <p><?php echo htmlspecialchars($empty); ?></p>
@@ -147,23 +149,21 @@ $dt->close();
                 <?php foreach ($music_list as $music): ?>
                     <div class="music-item">
                         <div class="music-info">
-                            <div class="play-item">
+                            <div class="one">
                                 <img src="resource_ASS3/play.png" alt="Play" style="width=100px;">
-                                <audio class="audio-player" data-musid="<?php echo htmlspecialchars($music['Id']); ?>">
-
-                                </audio>
+                                <audio class="audio-player" data-musid="<?php echo htmlspecialchars($music['_id']); ?>"></audio>
                                 <p><strong><?php echo htmlspecialchars($music['Title']); ?></strong> <br> <?php echo htmlspecialchars($music['Artist']); ?></p>
                             </div>
-                            <div>
+                            <div class="two">
                                 <p><?php echo htmlspecialchars($music['Length']); ?></p>
                             </div>
-                            <div>
+                            <div class="three">
                                 <p>
                                     <img src="resource_ASS3/CC4.png" alt="License" class="icon"> 
                                     <img src="resource_ASS3/count.png" alt="Play count" class="icon"> <?php echo htmlspecialchars($music['Pcount']); ?>
                                 </p>
                             </div>
-                            <div>
+                            <div class="four">
                                 <p><?php echo htmlspecialchars($music['Tags']); ?></p>
                             </div>
                         </div>
@@ -172,7 +172,6 @@ $dt->close();
             </div>
         </div>
     <?php endif; ?>
-
     <script src="handle.js"></script>
 </body>
 </html>
