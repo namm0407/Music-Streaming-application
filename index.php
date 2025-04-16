@@ -12,7 +12,7 @@ $session_expired = false;
 $auth_failed = false;
 $notification = "";
 if (isset($_SESSION['username']) && isset($_SESSION['login_time'])) {
-    if (time() - $_SESSION['login_time'] > 300) {
+    if (time() - $_SESSION['login_time'] > 5) {
         session_destroy();
         session_start();
         $session_expired = true;
@@ -59,16 +59,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 $search_term = $_GET['search'] ?? '';
 $music_list = [];
 $list_title = "Top 8 Popular Music";
+$empty = "";
 if ($session_expired || !isset($_SESSION['username'])) {
     // Show login page
 } else {
+    //$list_title = "All music under " . htmlspecialchars($search_term);
     if (!empty($search_term)) {
-        $list_title = "Music under genre: " . htmlspecialchars($search_term);
-        $stmt = $dt->prepare("SELECT Id, Title, Artist, Length, License, Pcount, Tags FROM Music WHERE Tags LIKE ? ORDER BY Pcount DESC LIMIT 8");
+        $list_title = "All music under " . htmlspecialchars($search_term);
+        $stmt = $dt->prepare("SELECT _id, Title, Artist, Length, License, Pcount, Tags FROM music WHERE Tags LIKE ? ORDER BY Pcount DESC LIMIT 8");
         $like_term = "%" . $search_term . "%";
         $stmt->bind_param("s", $like_term);
     } else {
-        $stmt = $dt->prepare("SELECT Id, Title, Artist, Length, License, Pcount, Tags FROM Music ORDER BY Pcount DESC LIMIT 8");
+        $stmt = $dt->prepare("SELECT _id, Title, Artist, Length, License, Pcount, Tags FROM music ORDER BY Pcount DESC LIMIT 8");
     }
     $stmt->execute();
     $result = $stmt->get_result();
@@ -77,7 +79,9 @@ if ($session_expired || !isset($_SESSION['username'])) {
     }
     $stmt->close();
     if (empty($music_list) && !empty($search_term)) {
-        $list_title = "No music found under this genre " . htmlspecialchars($search_term);
+        //$list_title = "All music under " . htmlspecialchars($search_term);
+        $empty = "No music found under this genre (" . htmlspecialchars($search_term) . ")";
+
     }
 }
 $dt->close();
@@ -96,7 +100,7 @@ $dt->close();
 <body>
     <header>
         <h1>3322 Royalty Free Music</h1>
-        <p>Source: <a href="https://www.chosic.com/free-music/all/" target="_blank">https://www.chosic.com/free-music/all/</a></p>
+        <p>(Source: <a href="https://www.chosic.com/free-music/all/" target="_blank">https://www.chosic.com/free-music/all/</a>)</p>
     </header>
 
     <?php if (!isset($_SESSION['username']) || $session_expired): ?>
@@ -115,10 +119,10 @@ $dt->close();
                 <div class="button-container">
                     <button type="submit">Log in</button>
                 </div>   
-                <?php if ($auth_failed || $session_expired): ?>
-                    <p class="error"><?php echo htmlspecialchars($notification); ?></p>
-                <?php endif; ?>   
             </fieldset> 
+            <?php if ($auth_failed || $session_expired): ?>
+                <p class="error"><?php echo htmlspecialchars($notification); ?></p>
+            <?php endif; ?>   
             </form>
         </div>  
     
@@ -127,34 +131,41 @@ $dt->close();
         <div class="music-container">
             <div class="search-bar">
                 <form method="GET" action="index.php">
-                    Search  <input type="text" name="search" id="searchInput" placeholder="Search for genre" value="<?php echo htmlspecialchars($search ?? ''); ?>">
+                    Search <input type="text" name="search" id="searchInput" placeholder="Search for genre" value="<?php echo htmlspecialchars($search ?? ''); ?>">
                 </form>
             </div>
             <div class="genre-buttons">
-                <button onclick="searchGenre('')">Cinematic</button>
+                <button onclick="searchGenre('Cinematic')">Cinematic</button>
                 <button onclick="searchGenre('Games')">Games</button>
                 <button onclick="searchGenre('Romantic')">Romantic</button>
                 <button onclick="searchGenre('Study')">Study</button>
                 <button onclick="searchGenre('Popular')">Popular</button>
             </div>
             <h2><?php echo htmlspecialchars($list_title); ?></h2>
+            <p><?php echo htmlspecialchars($empty); ?></p>
             <div class="music-list">
                 <?php foreach ($music_list as $music): ?>
                     <div class="music-item">
-                        <div class="music-controls">
-                            <button class="play-btn" data-musid="<?php echo htmlspecialchars($music['Id']); ?>">
-                                <img src="play.png" alt="Play">
-                            </button>
-                            <audio class="audio-player" data-musid="<?php echo htmlspecialchars($music['Id']); ?>"></audio>
-                        </div>
                         <div class="music-info">
-                            <p><strong><?php echo htmlspecialchars($music['Title']); ?></strong> by <?php echo htmlspecialchars($music['Artist']); ?></p>
-                            <p>Duration: <?php echo htmlspecialchars($music['Length']); ?></p>
-                            <p>
-                                <img src="CC4.png" alt="License" class="icon"> <?php echo htmlspecialchars($music['License']); ?>
-                                <img src="count.png" alt="Play count" class="icon"> <?php echo htmlspecialchars($music['Pcount']); ?>
-                            </p>
-                            <p>Genres: <?php echo htmlspecialchars($music['Tags']); ?></p>
+                            <div class="play-item">
+                                <img src="resource_ASS3/play.png" alt="Play" style="width=100px;">
+                                <audio class="audio-player" data-musid="<?php echo htmlspecialchars($music['Id']); ?>">
+
+                                </audio>
+                                <p><strong><?php echo htmlspecialchars($music['Title']); ?></strong> <br> <?php echo htmlspecialchars($music['Artist']); ?></p>
+                            </div>
+                            <div>
+                                <p><?php echo htmlspecialchars($music['Length']); ?></p>
+                            </div>
+                            <div>
+                                <p>
+                                    <img src="resource_ASS3/CC4.png" alt="License" class="icon"> 
+                                    <img src="resource_ASS3/count.png" alt="Play count" class="icon"> <?php echo htmlspecialchars($music['Pcount']); ?>
+                                </p>
+                            </div>
+                            <div>
+                                <p><?php echo htmlspecialchars($music['Tags']); ?></p>
+                            </div>
                         </div>
                     </div>
                 <?php endforeach; ?>
