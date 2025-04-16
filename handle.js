@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (currentAudio && currentAudio !== audio) {
                         currentAudio.pause();
                         const prevButton = document.querySelector(`button[data-musid="${currentAudio.dataset.musid}"]`);
-                        prevButton.innerHTML = '<img src="play.png" alt="Play">';
+                        prevButton.innerHTML = '<img src="resource_ASS3/play.png" alt="Play">';
                     }
         
                     if (isPaused || audio.ended || !audio.src) {
@@ -71,16 +71,16 @@ document.addEventListener('DOMContentLoaded', function() {
                                 window.location.href = 'index.php';
                             }
                         });
-                        button.innerHTML = '<img src="pause.png" alt="Pause">';
+                        button.innerHTML = '<img src="resource_ASS3/pause.png" alt="Pause">';
                         currentAudio = audio;
                         alert('Playing music');
                     } else if (!audio.paused) {
                         audio.pause();
-                        button.innerHTML = '<img src="play.png" alt="Play">';
+                        button.innerHTML = '<img src="resource_ASS3/play.png" alt="Play">';
                         alert('Music paused');
                     } else {
                         audio.play();
-                        button.innerHTML = '<img src="pause.png" alt="Pause">';
+                        button.innerHTML = '<img src="resource_ASS3/pause.png" alt="Pause">';
                         alert('Resuming music');
                     }
                 });
@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
             audioElements.forEach(audio => {
                 audio.addEventListener('ended', () => {
                     const button = document.querySelector(`button[data-musid="${audio.dataset.musid}"]`);
-                    button.innerHTML = '<img src="play.png" alt="Play">';
+                    button.innerHTML = '<img src="resource_ASS3/play.png" alt="Play">';
                     audio.src = '';
                     currentAudio = null;
                 });
