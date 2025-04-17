@@ -25,6 +25,9 @@ fieldset {
     width: 100%; 
     min-width: 350px;
 }
+legend {
+    padding: 0px;
+}
 
 .login-form div {
     margin-bottom: 15px;
@@ -41,8 +44,8 @@ fieldset {
 }
 
 .login-form button {
-    background-color: rgba(212, 212, 212, 0.801);
-    color: black;
+    background-color: rgba(255, 255, 255, 0.676);
+    color: rgb(78, 77, 77);
     padding: 5px 5px;
     border-radius: 4px;
     cursor: pointer;
