@@ -151,7 +151,10 @@ $dt->close();
                         <div class="music-info">
                             <div class="one">
                                 <img src="resource_ASS3/play.png" alt="Play" style="width=100px;">
-                                <audio class="audio-player" data-musid="<?php echo htmlspecialchars($music['_id']); ?>"></audio>
+                                <audio class="audio-player" 
+                                    src="resource_ASS3/Music/Music/<?php echo htmlspecialchars($music['Filename']); ?>" 
+                                    data-musid="<?php echo htmlspecialchars($music['_id']); ?>">
+                                </audio> 
                                 <p><strong><?php echo htmlspecialchars($music['Title']); ?></strong> <br> <?php echo htmlspecialchars($music['Artist']); ?></p>
                             </div>
                             <div class="two">
