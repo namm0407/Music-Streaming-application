@@ -8,12 +8,10 @@ if (!isset($_SESSION['username'])) {
 }
 
 // Check if session has expired (300 seconds = 5 minutes)
-if (isset($_SESSION['login_time'])) {
-    if (time() - $_SESSION['login_time'] > 300) {
-        session_destroy();
-        http_response_code(401); // Unauthorized
-        exit();
-    }
+if (isset($_SESSION['login_time']) && (time() - $_SESSION['login_time'] > 300)) {
+    session_destroy();
+    http_response_code(401); // Unauthorized
+    exit("Session expired. Please log in again.");
 }
 
 // Check if music ID is provided
@@ -23,6 +21,20 @@ if (!isset($_GET['_id'])) {
 }
 
 $musid = $_GET['_id'];
+$musicZipPath = 'resource_ASS3/Music.zip';
+$extractPath = 'resource_ASS3/Music/';
+
+// If Music.zip exists but Music folder doesn't, extract it
+if (file_exists($musicZipPath) && !is_dir($extractPath)) {
+    $zip = new ZipArchive;
+    if ($zip->open($musicZipPath) === TRUE) {
+        $zip->extractTo($extractPath); // Extract to "resource_ASS3/Music/"
+        $zip->close();
+        echo "Music folder extracted successfully!";
+    } else {
+        die("Failed to open Music.zip");
+    }
+}
 
 // Connect to database
 $db = new mysqli("mydb", "dummy", "c3322b", "db3322");
