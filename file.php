@@ -1,72 +1,73 @@
 <?php
 session_start();
 
-// Database connection
+// Check if session is active
+if (!isset($_SESSION['username'])) {
+    http_response_code(401); // Unauthorized
+    exit();
+}
+
+// Check if session has expired (300 seconds = 5 minutes)
+if (isset($_SESSION['login_time'])) {
+    if (time() - $_SESSION['login_time'] > 300) {
+        session_destroy();
+        http_response_code(401); // Unauthorized
+        exit();
+    }
+}
+
+// Check if music ID is provided
+if (!isset($_GET['_id'])) {
+    http_response_code(401); // Bad request
+    exit();
+}
+
+$musid = $_GET['_id'];
+
+// Connect to database
 $db = new mysqli("mydb", "dummy", "c3322b", "db3322");
 if ($db->connect_error) {
-    http_response_code(500);
     die("Connection Error: " . $db->connect_error);
 }
 
-// Session control
-\$session_expired = false;
-$auth_failed = false;
-$notification = "";
-if (isset($_SESSION['username']) && isset($_SESSION['login_time'])) {
-    if (time() - $_SESSION['login_time'] > 5) {
-        session_destroy();
-        session_start();
-        $session_expired = true;
-        $notification = "Session expired!!";
-    }
-} else {
-    unset($_SESSION['username']);
-}
-
-// Check if musid is provided
-if (!isset($_GET['musid']) || empty($_GET['musid'])) {
-    http_response_code(400);
-    die("Missing music ID");
-}
-
-$musid = $_GET['musid'];
-
-// Prepare and execute query to get music file info
-$stmt = $db->prepare("SELECT Path, Filename FROM Music WHERE _id = ?");
+// Get music file info
+$stmt = $db->prepare("SELECT Path, Filename FROM music WHERE _id = ?");
 $stmt->bind_param("s", $musid);
 $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows === 0) {
-    http_response_code(404);
-    die("Music not found");
+    http_response_code(401); // Not found
+    exit();
 }
 
 $music = $result->fetch_assoc();
-$filePath = $music['Path'] . '/' . $music['Filename'];
-
-// Verify file exists
-if (!file_exists($filePath)) {
-    http_response_code(404);
-    die("File not found");
-}
+$stmt->close();
 
 // Update play count
-$updateStmt = $db->prepare("UPDATE Music SET Pcount = Pcount + 1 WHERE _id = ?");
-$updateStmt->bind_param("s", $musid);
-$updateStmt->execute();
-$updateStmt->close();
+$update_stmt = $db->prepare("UPDATE music SET Pcount = Pcount + 1 WHERE _id = ?");
+$update_stmt->bind_param("s", $musid);
+$update_stmt->execute();
+$update_stmt->close();
 
-// Stream the audio file
-header('Content-Type: audio/mpeg');
-header('Content-Length: ' . filesize($filePath));
-header('Content-Disposition: inline; filename="' . $music['Filename'] . '"');
-header('Cache-Control: no-cache');
-header('Accept-Ranges: bytes');
-
-// Read and output the file
-readfile($filePath);
-
-$stmt->close();
 $db->close();
+
+// Stream the music file
+$file_path = 'resource_ASS3/' . $music['Path'] . '/' . $music['Filename'];
+if (!file_exists($file_path)) {
+    http_response_code(401); // Not found
+    exit();
+}
+
+// Set appropriate headers for audio streaming
+header('Content-Type: audio/mpeg');
+header('Content-Length: ' . filesize($file_path));
+header('Content-Disposition: inline; filename="' . $music['Filename'] . '"');
+header('X-Content-Type-Options: nosniff');
+
+// Clear output buffer and stream the file
+ob_clean();
+flush();
+readfile($file_path);
+exit();
 ?>
