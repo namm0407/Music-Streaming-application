@@ -13,7 +13,7 @@ $session_expired = false;
 $auth_failed = false;
 $notification = ""; 
 if (isset($_SESSION['username']) && isset($_SESSION['login_time'])) {
-    if (time() - $_SESSION['login_time'] > 15) {
+    if (time() - $_SESSION['login_time'] > 300) {
         session_destroy();
         session_start();
         $session_expired = true;
